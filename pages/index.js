@@ -29,12 +29,11 @@ class MyApp extends React.Component {
   }
 
   async submitSearch() {
-    console.log('submit');
     const {
       startDate,
       endDate,
     } = this.state;
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, error: null });
     const response = await fetch(`/api/asteroids?startDate=${startDate}&endDate=${endDate}`);
 
     this.setState({ isLoading: false, ...await response.json() });
@@ -45,6 +44,7 @@ class MyApp extends React.Component {
       startDate,
       endDate,
       isLoading,
+      error,
       closestAsteroid,
       avgMagnitudeOfHazardousAsteroids,
       medianAsteroidMagnitude,
@@ -71,7 +71,7 @@ class MyApp extends React.Component {
           {'Submit'}
         </button>
 
-        {isLoading ? <div className="results">Fetching information...</div>
+        {isLoading || error ? <div className="results">{error ? 'Oopsie poopsie... :-(' : 'Fetching information...'}</div>
           : (
             <div className="results">
               <div>{`avgMagnitudeOfHazardousAsteroids: ${avgMagnitudeOfHazardousAsteroids}`}</div>
