@@ -1,0 +1,10 @@
+{
+    "name": "next-level-web-service",
+    "version": 2,
+    "env": {
+        "API_KEY": "<Place here>"
+      },
+    "routes": [
+        { "src": "/api", "dest": "/api/handler.js", "headers" : {"Content-Type" : "application/json"} }
+    ]
+}
