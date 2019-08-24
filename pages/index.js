@@ -1,58 +1,99 @@
-import Link from 'next/link';
-import Layout from '../components/MyLayout';
+import React from 'react';
+import fetch from 'isomorphic-unfetch';
 
-function getPosts() {
-  return [
-    { id: 'hello-nextjs', title: 'Hello Next.js' },
-    { id: 'learn-nextjs', title: 'Learn Next.js is awesome' },
-    { id: 'deploy-nextjs', title: 'Deploy apps with ZEIT' },
-  ];
-}
 
-const PostLink = ({ post }) => (
-  <li>
-    <Link href="/p/[id]" as={`/p/${post.id}`}>
-      <a>{post.title}</a>
-    </Link>
-    <style jsx>
-      {`
-      li {
-        list-style: none;
-        margin: 5px 0;
-      }
+class MyApp extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      startDate: '2015-12-19',
+      endDate: '2015-12-26',
+    };
 
-      a {
-        text-decoration: none;
-        color: blue;
-        font-family: 'Arial';
-      }
+    this.handleStartDate = this.handleStartDate.bind(this);
+    this.handleEndDate = this.handleEndDate.bind(this);
+    this.submitSearch = this.submitSearch.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
+  }
 
-      a:hover {
-        opacity: 0.6;
-      }
-    `}
+  componentDidMount() {
+    this.submitSearch();
+  }
 
-    </style>
-  </li>
-);
+  handleStartDate(e) {
+    this.setState({ startDate: e.target.value });
+  }
 
-export default function Blog() {
-  return (
-    <Layout>
-      <h1>My Blog</h1>
-      <ul>
-        {getPosts().map((post) => (
-          <PostLink key={post.id} post={post} />
-        ))}
-      </ul>
-      <style jsx>
-        {`
+  handleEndDate(e) {
+    this.setState({ endDate: e.target.value });
+  }
+
+  async submitSearch() {
+    console.log('submit');
+    const {
+      startDate,
+      endDate,
+    } = this.state;
+    this.setState({ isLoading: true });
+    const response = await fetch(`/api/asteroids?startDate=${startDate}&endDate=${endDate}`);
+
+    this.setState({ isLoading: false, ...await response.json() });
+  }
+
+  render() {
+    const {
+      startDate,
+      endDate,
+      isLoading,
+      closestAsteroid,
+      avgMagnitudeOfHazardousAsteroids,
+      medianAsteroidMagnitude,
+    } = this.state;
+
+    return (
+      <div>
+        <h1>Asteroids search</h1>
+
+        <input
+          onChange={this.handleStartDate}
+          value={startDate}
+        />
+
+        <input
+          onChange={this.handleEndDate}
+          value={endDate}
+        />
+
+        <button
+          type="button"
+          onClick={this.submitSearch}
+        >
+          {'Submit'}
+        </button>
+
+        {isLoading ? <div className="results">Fetching information...</div>
+          : (
+            <div className="results">
+              <div>{`avgMagnitudeOfHazardousAsteroids: ${avgMagnitudeOfHazardousAsteroids}`}</div>
+              <div>{`medianAsteroidMagnitude: ${medianAsteroidMagnitude}`}</div>
+            </div>
+          )}
+
+        <style jsx>
+          {`
         h1 {
           font-family: 'Arial';
         }
+
+        .results {
+          margin-top: 24px;
+        }
       `}
 
-      </style>
-    </Layout>
-  );
+        </style>
+      </div>
+    );
+  }
 }
+
+export default MyApp;
