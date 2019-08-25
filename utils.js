@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 
 /**
  * Calculate median from an array of values.

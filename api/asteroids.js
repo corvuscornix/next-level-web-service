@@ -2,22 +2,30 @@ import fetch from 'isomorphic-unfetch';
 import { median } from '../utils';
 
 /**
- * Fetch asteroid information from NASA API for period between @startDate
- * and @endDate and return the following information:
+ * Fetch asteroid information from NASA NEO API. Uses query parameters @startDate
+ * and @endDate to limit the period.
  *
- * a) @closestAsteroid the asteroid that passed the closest to Earth
+ * Returns the following information in a JSON object:
  *
- * b) @medianAsteroidMagnitude the median absolute magnitude of all asteroids measured in the feed
+ * a) @closestAsteroid - information of the asteroid that passed closest to Earth
  *
- * c) @avgMagnitudeOfHazardousAsteroids the mean absolute magnitude of all asteroids considered potentially
+ * b) @medianAsteroidMagnitude - the median absolute magnitude of all asteroids measured in the feed
+ *
+ * c) @avgMagnitudeOfHazardousAsteroids - the mean absolute magnitude of all asteroids considered potentially
  * hazardous
+ *
+ * or @error message if API or function fails.
 */
 
-export default async function closestAsteroid(req, res) {
+export default async function asteroids(req, res) {
   try {
     const { startDate, endDate } = req.query;
     const response = await fetch(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${process.env.API_KEY}`);
     const json = await response.json();
+
+    if (json.error_message) {
+      throw new Error(json.error_message);
+    }
 
     let closestAsteroidDistance = Infinity;
     let closestAsteroidData = null;
