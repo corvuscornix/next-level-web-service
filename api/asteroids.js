@@ -21,7 +21,14 @@ export default async function asteroids(req, res) {
   try {
     const { startDate, endDate } = req.query;
     const response = await fetch(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${process.env.API_KEY}`);
-    const json = await response.json();
+
+    let json;
+
+    try {
+      json = await response.json();
+    } catch (e) {
+      throw new Error('No data');
+    }
 
     if (json.error_message) {
       throw new Error(json.error_message);
@@ -35,7 +42,7 @@ export default async function asteroids(req, res) {
 
     const magnitudes = [];
 
-    // Iterate through all the object data in the given period and collect information
+    // Iterate through all the object data and collect information
     Object.values(json.near_earth_objects).forEach((objectsPerDate) => {
       objectsPerDate.forEach((objectData) => {
         magnitudes.push(objectData.absolute_magnitude_h);

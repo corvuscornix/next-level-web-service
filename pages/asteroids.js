@@ -1,42 +1,33 @@
 import React from 'react';
 import fetch from 'isomorphic-unfetch';
-import Layout from '../components/MyLayout';
+import Layout from '../components/PageLayout';
 import Error from '../components/Error';
+import PeriodSearch from '../components/PeriodSearch';
 
 
 class AsteroidSearch extends React.Component {
   constructor(props) {
     super(props);
+
+    // Perform a default search on "page load"
     this.state = {
-      startDate: '2015-12-19',
-      endDate: '2015-12-26',
       isLoading: true,
+      defaultStart: '2015-12-19',
+      defaultEnd: '2015-12-26',
     };
 
-    this.handleStartDate = this.handleStartDate.bind(this);
-    this.handleEndDate = this.handleEndDate.bind(this);
     this.submitSearch = this.submitSearch.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
   }
 
   componentDidMount() {
-    this.submitSearch();
+    const { defaultStart, defaultEnd } = this.state;
+    this.submitSearch(defaultStart, defaultEnd);
   }
 
-  handleStartDate(e) {
-    this.setState({ startDate: e.target.value });
-  }
-
-  handleEndDate(e) {
-    this.setState({ endDate: e.target.value });
-  }
-
-  async submitSearch() {
-    const {
-      startDate,
-      endDate,
-    } = this.state;
+  async submitSearch(startDate, endDate) {
     this.setState({ isLoading: true, error: null });
+
     const response = await fetch(`/api/asteroids?startDate=${startDate}&endDate=${endDate}`);
 
     this.setState({ isLoading: false, ...await response.json() });
@@ -44,13 +35,13 @@ class AsteroidSearch extends React.Component {
 
   render() {
     const {
-      startDate,
-      endDate,
       isLoading,
       error,
       closestAsteroid,
       avgMagnitudeOfHazardousAsteroids,
       medianAsteroidMagnitude,
+      defaultStart,
+      defaultEnd,
     } = this.state;
 
     let results = null;
@@ -82,22 +73,7 @@ class AsteroidSearch extends React.Component {
       <Layout>
         <h2>Asteroids search</h2>
 
-        <input
-          onChange={this.handleStartDate}
-          value={startDate}
-        />
-
-        <input
-          onChange={this.handleEndDate}
-          value={endDate}
-        />
-
-        <button
-          type="button"
-          onClick={this.submitSearch}
-        >
-          {'Submit'}
-        </button>
+        <PeriodSearch defaultStart={defaultStart} defaultEnd={defaultEnd} onSubmit={this.submitSearch} />
 
         <div className="results">
           {results}

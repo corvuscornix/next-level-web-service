@@ -1,41 +1,28 @@
 import React from 'react';
 import fetch from 'isomorphic-unfetch';
-import Layout from '../components/MyLayout';
+import Layout from '../components/PageLayout';
 import Error from '../components/Error';
-
+import PeriodSearch from '../components/PeriodSearch';
 
 class SolarflareSearch extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      startDate: '2015-12-19',
-      endDate: '2016-12-26',
+      defaultStart: '2015-12-19',
+      defaultEnd: '2016-12-26',
       isLoading: true,
     };
 
-    this.handleStartDate = this.handleStartDate.bind(this);
-    this.handleEndDate = this.handleEndDate.bind(this);
     this.submitSearch = this.submitSearch.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
   }
 
   componentDidMount() {
-    this.submitSearch();
+    const { defaultStart, defaultEnd } = this.state;
+    this.submitSearch(defaultStart, defaultEnd);
   }
 
-  handleStartDate(e) {
-    this.setState({ startDate: e.target.value });
-  }
-
-  handleEndDate(e) {
-    this.setState({ endDate: e.target.value });
-  }
-
-  async submitSearch() {
-    const {
-      startDate,
-      endDate,
-    } = this.state;
+  async submitSearch(startDate, endDate) {
     this.setState({ isLoading: true, error: null });
     const response = await fetch(`/api/solarflares?startDate=${startDate}&endDate=${endDate}`);
 
@@ -44,8 +31,8 @@ class SolarflareSearch extends React.Component {
 
   render() {
     const {
-      startDate,
-      endDate,
+      defaultStart,
+      defaultEnd,
       isLoading,
       error,
       mostCommonClassType,
@@ -61,13 +48,11 @@ class SolarflareSearch extends React.Component {
     } else {
       results = (
         <>
-
           <h3>Regions with most solar flares</h3>
           <div>{`Top number of flares in a region during the period was ${regionsWithMostSolarFlares.count}. Those regions were: ${regionsWithMostSolarFlares.regions.join(', ')}.`}</div>
 
           <h3>Most common class type</h3>
           <div>{`Most common class type(s) appeared ${mostCommonClassType.count} times during the period. Those types were: ${mostCommonClassType.names.join(', ')}.`}</div>
-
         </>
       );
     }
@@ -76,22 +61,7 @@ class SolarflareSearch extends React.Component {
       <Layout>
         <h2>Solar flares search</h2>
 
-        <input
-          onChange={this.handleStartDate}
-          value={startDate}
-        />
-
-        <input
-          onChange={this.handleEndDate}
-          value={endDate}
-        />
-
-        <button
-          type="button"
-          onClick={this.submitSearch}
-        >
-          {'Submit'}
-        </button>
+        <PeriodSearch defaultStart={defaultStart} defaultEnd={defaultEnd} onSubmit={this.submitSearch} />
 
         <div className="results">
           {results}

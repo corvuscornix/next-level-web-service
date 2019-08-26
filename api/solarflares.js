@@ -1,5 +1,4 @@
 import fetch from 'isomorphic-unfetch';
-import { median } from '../utils';
 
 /**
  * Fetch solar flare information from NASA DONKI API. Uses query parameters @startDate
@@ -19,7 +18,14 @@ export default async function solarflares(req, res) {
   try {
     const { startDate, endDate } = req.query;
     const response = await fetch(`https://api.nasa.gov/DONKI/FLR?startDate=${startDate}&endDate=${endDate}&api_key=${process.env.API_KEY}`);
-    const json = await response.json();
+
+    let json;
+
+    try {
+      json = await response.json();
+    } catch (e) {
+      throw new Error('No data');
+    }
 
     if (json.error_message) {
       throw new Error(json.error_message);
@@ -28,20 +34,23 @@ export default async function solarflares(req, res) {
     const flareCountByRegion = {};
     const flareCountByClassType = {};
 
-    json.forEach((item) => {
-      if (!flareCountByRegion[item.activeRegionNum]) {
-        flareCountByRegion[item.activeRegionNum] = 1;
+    json.forEach((flareData) => {
+      // Increment the corresponding region count by one
+      if (!flareCountByRegion[flareData.activeRegionNum]) {
+        flareCountByRegion[flareData.activeRegionNum] = 1;
       } else {
-        flareCountByRegion[item.activeRegionNum] += 1;
+        flareCountByRegion[flareData.activeRegionNum] += 1;
       }
 
-      if (!flareCountByClassType[item.classType]) {
-        flareCountByClassType[item.classType] = 1;
+      // Increment the corresponding class type count by one
+      if (!flareCountByClassType[flareData.classType]) {
+        flareCountByClassType[flareData.classType] = 1;
       } else {
-        flareCountByClassType[item.classType] += 1;
+        flareCountByClassType[flareData.classType] += 1;
       }
     });
 
+    // "Flip" the flareCountByRegion into regionByFlareCount
     const regionByFlareCount = {};
     Object.keys(flareCountByRegion).forEach((region) => {
       const flareCount = flareCountByRegion[region];
@@ -51,6 +60,7 @@ export default async function solarflares(req, res) {
       regionByFlareCount[flareCount].push(region);
     });
 
+    // Flip also the flareCountByClassType
     const classTypeByFlareCount = {};
     Object.keys(flareCountByClassType).forEach((region) => {
       const flareCount = flareCountByClassType[region];
@@ -60,10 +70,12 @@ export default async function solarflares(req, res) {
       classTypeByFlareCount[flareCount].push(region);
     });
 
-    const topFlareCount = Object.keys(regionByFlareCount).pop();
+    // The object already did the alphanumerical ordering (of keys) for us so we can just pop the last key to get the biggest flare count
+    const topFlareCount = parseInt(Object.keys(regionByFlareCount).pop(), 10);
     const topRegions = regionByFlareCount[topFlareCount];
 
-    const topClassTypeCount = Object.keys(classTypeByFlareCount).pop();
+    // ...also for the class type count
+    const topClassTypeCount = parseInt(Object.keys(classTypeByFlareCount).pop(), 10);
     const topClassTypeName = classTypeByFlareCount[topClassTypeCount];
 
     res.json({
