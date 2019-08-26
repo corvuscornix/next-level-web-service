@@ -9,7 +9,7 @@
         "dest": "/api/$1.js",
         "headers": { "Content-Type": "application/json" }
     }],
-    "regions": ["hel1"],
+    "regions": ["arn1"],
     "github": {
         "silent": true
       }
