@@ -9,9 +9,11 @@ export default function Layout(props) {
       <style jsx global>
         {`
           .layout {
-            margin: 20px;
-            padding: 20px;
+            margin: 20px auto 0 auto;
+            padding: 24px;
             background: white;
+            max-width: 800px;
+            padding-bottom: 48px;
            }
 
            .results {

@@ -7,10 +7,6 @@ const pages = {
   '/solarflares': 'Solar flares',
 };
 
-const linkStyle = {
-  marginRight: 15,
-};
-
 export default function Header() {
   const router = useRouter();
 
@@ -21,7 +17,7 @@ export default function Header() {
 
         {Object.entries(pages).map(([path, title]) => (
           <Link key={path} href={path} as={path}>
-            <a style={{ ...linkStyle, background: router.route == path ? 'rgba(1,1,1,0.1)' : null }}>{title}</a>
+            <a style={router.route == path ? { background: 'rgba(1,1,1,0.1)' } : null}>{title}</a>
           </Link>
 
         ))}
@@ -37,12 +33,19 @@ export default function Header() {
           .navigation {
             padding: 8px 0;
             margin-bottom: 24px;
+            display: flex;
+            overflow: hidden;
+            flex-wrap: nowrap;
+            justify-content: space-evenly;
           }
 
           a {
             text-transform: uppercase;
             text-decoration: none;
             padding: 16px;
+            display: flex;
+            text-align: center;
+            align-items: center;
           }
 
           a:hover {
