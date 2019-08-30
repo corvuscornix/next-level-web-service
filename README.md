@@ -18,3 +18,5 @@ This project also contains couple of tests for current API endpoints.
 ## Deploy to cloud
 1) Register a free account at [Zeit.co](https://zeit.co)
 2) Run `now` at the root of the project folder and fill in the user credentials if asked
+
+You can configure automatic deployment on every GitHub commit from the zeit.co website.
