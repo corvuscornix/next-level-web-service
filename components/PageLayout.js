@@ -9,10 +9,9 @@ export default function Layout(props) {
       <style jsx global>
         {`
           .layout {
-            font-family: 'Arial';
             margin: 20px;
             padding: 20px;
-            border: 1px solid #DDD;
+            background: white;
            }
 
            .results {

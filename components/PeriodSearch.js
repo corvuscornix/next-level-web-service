@@ -1,60 +1,65 @@
 import React from 'react';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
-export default class PeriodSearch extends React.Component {
-  constructor(props) {
-    super(props);
+export default function PeriodSearch(props) {
+  const { defaultStart, defaultEnd, onSubmit } = props;
+  const [start, setStartDate] = React.useState(new Date(defaultStart));
+  const [end, setEndDate] = React.useState(new Date(defaultEnd));
 
-    this.state = {
-      startDate: props.defaultStart,
-      endDate: props.defaultEnd,
-    };
+  function submit() {
+    const dateFns = new DateFnsUtils();
 
-    this.handleStartDate = this.handleStartDate.bind(this);
-    this.handleEndDate = this.handleEndDate.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
+    try {
+      onSubmit(
+        dateFns.format(start, 'yyyy-MM-dd'),
+        dateFns.format(end, 'yyyy-MM-dd'),
+      );
+    } catch (e) {
+
+    }
   }
 
-  onSubmit() {
-    const {
-      startDate,
-      endDate,
-    } = this.state;
-    this.props.onSubmit(startDate, endDate);
-  }
-
-  handleStartDate(e) {
-    this.setState({ startDate: e.target.value });
-  }
-
-  handleEndDate(e) {
-    this.setState({ endDate: e.target.value });
-  }
-
-  render() {
-    const {
-      startDate,
-      endDate,
-    } = this.state;
-
-    return (
-      <div>
-        <input
-          onChange={this.handleStartDate}
-          value={startDate}
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Grid container justify="space-around">
+        <KeyboardDatePicker
+          margin="normal"
+          id="date-picker-dialog"
+          label="Pediod start"
+          format="dd.MM.yyyy"
+          value={start}
+          onChange={(e) => setStartDate(e)}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
         />
 
-        <input
-          onChange={this.handleEndDate}
-          value={endDate}
+        <KeyboardDatePicker
+          margin="normal"
+          id="date-picker-dialog"
+          label="Pediod end"
+          format="dd.MM.yyyy"
+          value={end}
+          onChange={(e) => setEndDate(e)}
+          KeyboardButtonProps={{
+            'aria-label': 'change date',
+          }}
         />
 
-        <button
-          type="button"
-          onClick={this.onSubmit}
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={submit}
         >
           {'Submit'}
-        </button>
-      </div>
-    );
-  }
+        </Button>
+      </Grid>
+    </MuiPickersUtilsProvider>
+  );
 }
