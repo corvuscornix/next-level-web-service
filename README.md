@@ -1,8 +1,10 @@
 # Next-level-web-service
-Experimentation on implementing a web service using Next.js on Zeit serverless platform. App has both UI and API implementation.
+Experimentation on implementing a web service using Next.js on Zeit serverless platform. It has both UI and API implementation.
+
+Working demo: https://next-level-web-service.anterotan.now.sh
 
 ## UI
-The app has a simple UI but utilizes some advanced web technologies such as code splitting, server side rendering and CSS-in-JS.
+The web service serves a simple UI but utilizes some advanced web technologies such as code splitting, server side rendering and CSS-in-JS.
 It also uses some of the latest React features like hooks and integrates with material-ui library.
 
 ## API
