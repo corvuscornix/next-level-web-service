@@ -1,5 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 import React from 'react';
 import fetch from 'isomorphic-unfetch';
+import { LinearProgress } from '@material-ui/core';
 import Layout from '../components/PageLayout';
 import Error from '../components/Error';
 import PeriodSearch from '../components/PeriodSearch';
@@ -13,19 +15,27 @@ class SolarflareSearch extends React.Component {
       isLoading: true,
     };
 
+    this._isMounted = false;
+
     this.submitSearch = this.submitSearch.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
   }
 
   componentDidMount() {
     const { defaultStart, defaultEnd } = this.state;
+    this._isMounted = true;
     this.submitSearch(defaultStart, defaultEnd);
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   async submitSearch(startDate, endDate) {
     this.setState({ isLoading: true, error: null });
     const response = await fetch(`/api/solarflares?startDate=${startDate}&endDate=${endDate}`);
 
+    if (!this._isMounted) return;
     this.setState({ isLoading: false, ...await response.json() });
   }
 
@@ -40,7 +50,7 @@ class SolarflareSearch extends React.Component {
     } = this.state;
 
     let results = null;
-    if (isLoading) results = 'Fetching information...';
+    if (isLoading) results = <LinearProgress />;
     else if (error) {
       results = (
         <Error message={error} />
@@ -69,12 +79,8 @@ class SolarflareSearch extends React.Component {
 
         <style jsx>
           {`
-            h1 {
-            font-family: 'Arial';
-            }
-
             .results {
-            margin-top: 24px;
+              margin-top: 24px;
             }
         `}
 

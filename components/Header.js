@@ -1,10 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-const linkStyle = {
-  marginRight: 15,
-};
-
 const pages = {
   '/': 'Home',
   '/asteroids': 'Asteroids',
@@ -14,18 +10,19 @@ const pages = {
 export default function Header() {
   const router = useRouter();
 
-  const handleClick = (e) => {
-    e.preventDefault();
-    router.push(href);
-  };
-
   return (
     <div>
       <div className="header">Next level web service</div>
       <div className="navigation">
-        {Object.entries(pages).map((page) => (
-          <Link href={page[0]}>
-            <a style={Object.assign(linkStyle, router.pathname === page[0] && { background: 'yellow' })} onClick={handleClick}>{page[1]}</a>
+        {Object.entries(pages).map(([path, title]) => (
+          <Link key={path} href={path} as={path}>
+            <a
+              style={
+                router.route == path ? { background: 'rgba(1,1,1,0.1)' } : null
+              }
+            >
+              {title}
+            </a>
           </Link>
         ))}
       </div>
@@ -39,29 +36,24 @@ export default function Header() {
 
           .navigation {
             padding: 8px 0;
-            position: relative;
+            margin-bottom: 24px;
             display: flex;
-            justify-content: space-between;
-            height: auto;
+            overflow: hidden;
+            flex-wrap: nowrap;
+            justify-content: space-evenly;
           }
 
           a {
-            background: gray;
-            padding: 16px;
-            margin: 0 8px;
-            color: white;
-            flex-grow: 1;
-            text-align: center;
             text-transform: uppercase;
             text-decoration: none;
+            padding: 16px;
+            display: flex;
+            text-align: center;
+            align-items: center;
           }
 
           a:hover {
-            background: red;
-          }
-
-          a.active {
-            background: green;
+            background: rgba(1, 1, 1, 0.1);
           }
         `}
       </style>

@@ -13,9 +13,9 @@ export default function Index() {
         {' '}
         and delivers a
         {' '}
-        <b>blazing fast UI</b>
+        <b>React UI</b>
         {' '}
-        with features such as React with
+        with advanced features like
         {' '}
         <b>server side rendering</b>
         {' '}

@@ -2,6 +2,7 @@
     "name": "next-level-web-service",
     "version": 2,
     "env": {
+        // Please get your own free key from https://api.nasa.gov/index.html#apply-for-an-api-key
         "API_KEY": "25EwKeqWxVjGkXmz4Ef8zNXdbLGG9t2FSiPnDc3e"
     },
     "routes": [{
